@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../utils/constants.dart';
 import '../widgets/Header.dart';
+import '../widgets/bar_graph/bar_graph.dart';
+import '../widgets/pie_chart/pie_chart.dart';
 
 class ExchangePage extends StatefulWidget {
   const ExchangePage({super.key});
@@ -11,7 +13,6 @@ class ExchangePage extends StatefulWidget {
 }
 
 class _ExchangePage extends State<ExchangePage> {
-
   // TODO: receive these things from provider
 
   // warns that the used rates are old
@@ -21,7 +22,8 @@ class _ExchangePage extends State<ExchangePage> {
   bool fail = false;
 
   // values for graphs
-  Map<String, double> values = {};
+  List<double> values = [];
+  List<String> currencies = [];
 
   double total = 0;
   String currencyToTransfer = "EUR";
@@ -146,7 +148,8 @@ class _ExchangePage extends State<ExchangePage> {
         children: const [
           Text(
             "Error",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 30),
             textAlign: TextAlign.center,
           ),
           SizedBox(
@@ -154,9 +157,7 @@ class _ExchangePage extends State<ExchangePage> {
           ),
           Text(
             "You have no internet connection, and the rates for the currencies in your wallet have not been stored in the app in previous uses.",
-            style: TextStyle(
-              color: Colors.white, fontSize: 25
-            ),
+            style: TextStyle(color: Colors.white, fontSize: 25),
             textAlign: TextAlign.center,
           ),
         ],
@@ -164,14 +165,19 @@ class _ExchangePage extends State<ExchangePage> {
     );
   }
 
-  Widget getWarning(){
+  Widget getWarning() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: const [
-        SizedBox(height: 15,),
+        SizedBox(
+          height: 15,
+        ),
         Text(
           "Warning",
-          style: TextStyle(color: ColorPallet.darkPink, fontWeight: FontWeight.bold, fontSize: 30),
+          style: TextStyle(
+              color: ColorPallet.darkPink,
+              fontWeight: FontWeight.bold,
+              fontSize: 30),
           textAlign: TextAlign.center,
         ),
         SizedBox(
@@ -179,31 +185,55 @@ class _ExchangePage extends State<ExchangePage> {
         ),
         Text(
           "You have no internet connection, the rates stored from your last use of the app are being used and might not be up to date.",
-          style: TextStyle(
-              color: ColorPallet.darkPink, fontSize: 25
-          ),
+          style: TextStyle(color: ColorPallet.darkPink, fontSize: 25),
           textAlign: TextAlign.center,
         ),
-        SizedBox(height: 30,),
+        SizedBox(
+          height: 30,
+        ),
       ],
     );
   }
 
-  Widget getBody() {
-    if (fail){
-      return Container(
-          margin: const EdgeInsets.all(10),
-          child: Column(
-              children: [
-                getDropDown(),
-                const SizedBox(
-                  height: 15),
-                getErrorScreen(),
-              ],
-            ),
-          );
-    }
+  Widget getBarGraph() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(0, 10, 0, 40),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        const Text(
+          "Wallet Breakdown:",
+          style: TextStyle(
+              color: ColorPallet.darkPink,
+              fontWeight: FontWeight.bold,
+              fontSize: 25),
+        ),
+        const SizedBox(
+          height: 40,
+        ),
+        SizedBox(
+            width: MediaQuery.of(context).size.width,
+            height: 300,
+            child: BarGraphWidget(currency: currencies, amount: values))
+      ]),
+    );
+  }
 
+  Widget getPieGraph() {
+    return PieChartWidget(currency: currencies, amount: values, convertedCurrency: currencyToTransfer,);
+  }
+
+  Widget getBody() {
+    if (fail) {
+      return Container(
+        margin: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            getDropDown(),
+            const SizedBox(height: 15),
+            getErrorScreen(),
+          ],
+        ),
+      );
+    }
 
     return Container(
         margin: const EdgeInsets.all(10),
@@ -215,7 +245,9 @@ class _ExchangePage extends State<ExchangePage> {
                 height: 15,
               ),
               if (noInternet) getWarning(),
-              getTotal()
+              getTotal(),
+              if (currencies.isNotEmpty) getBarGraph(),
+              if (currencies.isNotEmpty) getPieGraph()
             ],
           ),
         ));

@@ -1,7 +1,9 @@
+import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../utils/constants.dart';
-import '../widgets/Header.dart';
+import '../widgets/header.dart';
 
 class ExchangePage extends StatefulWidget {
   const ExchangePage({super.key});
@@ -30,7 +32,7 @@ class _ExchangePage extends State<ExchangePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Header("Wallet Conversion"),
-      body: getBody(),
+      body: getBody(context),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         onTap: (index) {
@@ -81,7 +83,7 @@ class _ExchangePage extends State<ExchangePage> {
               borderRadius: BorderRadius.circular(10.0)),
           child: DropdownButton<String>(
             isExpanded: true,
-            value: currencyToTransfer,
+            value: context.watch<ExchangeData>().target,
             icon: const Icon(
               Icons.arrow_drop_down,
               color: Colors.black,
@@ -89,10 +91,7 @@ class _ExchangePage extends State<ExchangePage> {
             ),
             style: const TextStyle(color: Colors.black),
             onChanged: (String? value) {
-              setState(() {
-                currencyToTransfer = value!;
-                // TODO: missing exchange logic
-              });
+              context.read<ExchangeData>().updateTarget(value!);
             },
             items:
                 codeToName.keys.map<DropdownMenuItem<String>>((String value) {
@@ -110,7 +109,7 @@ class _ExchangePage extends State<ExchangePage> {
     );
   }
 
-  Widget getTotal() {
+  Widget getTotal(BuildContext context) {
     var format = NumberFormat.simpleCurrency(locale: "pt");
 
     return Row(
@@ -127,7 +126,7 @@ class _ExchangePage extends State<ExchangePage> {
           width: 5,
         ),
         Text(
-          "${format.simpleCurrencySymbol(currencyToTransfer)} ${total.toString()} ($currencyToTransfer)",
+          "${format.simpleCurrencySymbol(context.watch<ExchangeData>().target)} ${context.watch<ExchangeData>().result} (${context.watch<ExchangeData>().target})",
           style: const TextStyle(fontSize: 25),
         )
       ],
@@ -189,7 +188,7 @@ class _ExchangePage extends State<ExchangePage> {
     );
   }
 
-  Widget getBody() {
+  Widget getBody(BuildContext context) {
     if (fail){
       return Container(
           margin: const EdgeInsets.all(10),
@@ -215,7 +214,7 @@ class _ExchangePage extends State<ExchangePage> {
                 height: 15,
               ),
               if (noInternet) getWarning(),
-              getTotal()
+              getTotal(context)
             ],
           ),
         ));

@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 class ExchangeData extends ChangeNotifier {
   bool loading = false;
-  Map<String, double> rates = {};
+  Map<String, dynamic> rates = {};
   Map<String, double> wallet = {
     "EUR": 23.4,
     "JPY": 2100,
@@ -17,12 +17,10 @@ class ExchangeData extends ChangeNotifier {
   String get target => targetCurrency;
 
   double getConversion() {
-    getRates();
-
     double res = 0.0;
 
-    for (String key in wallet!.keys.toList()) {
-      res += wallet![key]! / rates![key]!;
+    for (String key in wallet.keys.toList()) {
+      res += wallet[key]! / rates[key]!;
     }
 
     return res;
@@ -30,13 +28,13 @@ class ExchangeData extends ChangeNotifier {
 
   void updateTarget(String currency) {
     targetCurrency = currency;
-    //getRates();
+    getRates();
     notifyListeners();
   }
 
   void updateWallet(Map<String, double> wallet) {
     this.wallet = wallet;
-    //getRates();
+    getRates();
     notifyListeners();
   }
 
@@ -49,28 +47,24 @@ class ExchangeData extends ChangeNotifier {
 }
 
 
-Future<Map<String, double>> getRatesData(String base, List<String> symbols) async {
-  Map<String, double> rates = {};
+Future<Map<String, dynamic>> getRatesData(String base, List<String> symbols) async {
+  Map<String, dynamic> rates = {};
 
   String symbolsString = "";
   for (String symbol in symbols) {
     symbolsString = "$symbolsString,$symbol";
   }
   symbolsString = symbolsString.substring(1);
-  String apikey = "dAcvgFrStQ1JgqYQJg8rFGEDPndWqs6h";
+  String apikey = "lDRqpAZlcKarKpsq7O9yAsF7L9lLhI0Y";
   try {
-    log("https://data.fixer.io/api/latest?symbols=$symbolsString&base=$base");
     final response = await http.get(
-      Uri.parse("https://data.fixer.io/api/latest?symbols=$symbolsString&base=$base"),
-      headers: {
-        "apikey": apikey
-      }
+      Uri.parse("https://api.apilayer.com/fixer/latest?symbols=$symbolsString&base=$base&apikey=$apikey")
     );
-    log(response.body);
     if (response.statusCode == 200) {
       final item = json.decode(response.body);
       if (item["success"]) {
         rates = item["rates"];
+        log(rates.toString());
       }
       else {
         log("error");

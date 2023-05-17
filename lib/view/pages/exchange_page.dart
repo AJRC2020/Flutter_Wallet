@@ -1,5 +1,7 @@
+import 'dart:developer';
 import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../utils/constants.dart';
@@ -13,6 +15,13 @@ class ExchangePage extends StatefulWidget {
 }
 
 class _ExchangePage extends State<ExchangePage> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<ExchangeData>().getRates();
+  }
 
   // TODO: receive these things from provider
 
@@ -91,6 +100,7 @@ class _ExchangePage extends State<ExchangePage> {
             ),
             style: const TextStyle(color: Colors.black),
             onChanged: (String? value) {
+              log("changing");
               context.read<ExchangeData>().updateTarget(value!);
             },
             items:
@@ -189,6 +199,20 @@ class _ExchangePage extends State<ExchangePage> {
   }
 
   Widget getBody(BuildContext context) {
+    if (context.watch<ExchangeData>().loading) {
+      return Container(
+        child: SpinKitThreeBounce(
+          itemBuilder: (BuildContext context, int index) {
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: index.isEven ? Colors.red : Colors.green,
+              ),
+            );
+          },
+        ),
+      );
+    }
     if (fail){
       return Container(
           margin: const EdgeInsets.all(10),

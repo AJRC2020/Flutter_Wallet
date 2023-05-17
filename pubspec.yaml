@@ -40,6 +40,8 @@ dependencies:
   provider:
   http:
   flutter_spinkit:
+  connectivity_plus:
+  shared_preferences:
 
 dev_dependencies:
   flutter_test:

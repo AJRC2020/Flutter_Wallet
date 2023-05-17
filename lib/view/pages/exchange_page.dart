@@ -18,8 +18,8 @@ class _ExchangePage extends State<ExchangePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    context.read<ExchangeData>().updateConnectivity();
     context.read<ExchangeData>().getRates();
   }
 
@@ -100,7 +100,6 @@ class _ExchangePage extends State<ExchangePage> {
             ),
             style: const TextStyle(color: Colors.black),
             onChanged: (String? value) {
-              log("changing");
               context.read<ExchangeData>().updateTarget(value!);
             },
             items:
@@ -213,7 +212,7 @@ class _ExchangePage extends State<ExchangePage> {
         ),
       );
     }
-    if (fail){
+    if (context.watch<ExchangeData>().fail){
       return Container(
           margin: const EdgeInsets.all(10),
           child: Column(
@@ -237,7 +236,7 @@ class _ExchangePage extends State<ExchangePage> {
               const SizedBox(
                 height: 15,
               ),
-              if (noInternet) getWarning(),
+              if (!context.watch<ExchangeData>().internet) getWarning(),
               getTotal(context)
             ],
           ),

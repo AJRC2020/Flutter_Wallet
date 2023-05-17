@@ -1,7 +1,10 @@
+import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../utils/constants.dart';
-import '../widgets/Header.dart';
+import '../widgets/header.dart';
 import '../widgets/bar_graph/bar_graph.dart';
 import '../widgets/pie_chart/pie_chart.dart';
 
@@ -13,26 +16,19 @@ class ExchangePage extends StatefulWidget {
 }
 
 class _ExchangePage extends State<ExchangePage> {
-  // TODO: receive these things from provider
 
-  // warns that the used rates are old
-  bool noInternet = false;
-
-  // warns that there was no internet and no old conversion rates
-  bool fail = false;
-
-  // values for graphs
-  List<double> values = [];
-  List<String> currencies = [];
-
-  double total = 0;
-  String currencyToTransfer = "EUR";
+  @override
+  void initState() {
+    super.initState();
+    context.read<ExchangeData>().updateConnectivity();
+    context.read<ExchangeData>().getRates();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Header("Wallet Conversion"),
-      body: getBody(),
+      body: getBody(context),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 1,
         onTap: (index) {
@@ -83,7 +79,7 @@ class _ExchangePage extends State<ExchangePage> {
               borderRadius: BorderRadius.circular(10.0)),
           child: DropdownButton<String>(
             isExpanded: true,
-            value: currencyToTransfer,
+            value: context.watch<ExchangeData>().target,
             icon: const Icon(
               Icons.arrow_drop_down,
               color: Colors.black,
@@ -91,10 +87,7 @@ class _ExchangePage extends State<ExchangePage> {
             ),
             style: const TextStyle(color: Colors.black),
             onChanged: (String? value) {
-              setState(() {
-                currencyToTransfer = value!;
-                // TODO: missing exchange logic
-              });
+              context.read<ExchangeData>().updateTarget(value!);
             },
             items:
                 codeToName.keys.map<DropdownMenuItem<String>>((String value) {
@@ -112,7 +105,7 @@ class _ExchangePage extends State<ExchangePage> {
     );
   }
 
-  Widget getTotal() {
+  Widget getTotal(BuildContext context) {
     var format = NumberFormat.simpleCurrency(locale: "pt");
 
     return Row(
@@ -129,7 +122,7 @@ class _ExchangePage extends State<ExchangePage> {
           width: 5,
         ),
         Text(
-          "${format.simpleCurrencySymbol(currencyToTransfer)} ${total.toString()} ($currencyToTransfer)",
+          "${format.simpleCurrencySymbol(context.watch<ExchangeData>().target)} ${context.watch<ExchangeData>().result} (${context.watch<ExchangeData>().target})",
           style: const TextStyle(fontSize: 25),
         )
       ],
@@ -195,6 +188,52 @@ class _ExchangePage extends State<ExchangePage> {
     );
   }
 
+  Widget getBody(BuildContext context) {
+    if (context.watch<ExchangeData>().loading) {
+      return Container(
+        child: SpinKitThreeBounce(
+          itemBuilder: (BuildContext context, int index) {
+            return DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: index.isEven ? Colors.red : Colors.green,
+              ),
+            );
+          },
+        ),
+      );
+    }
+    if (context.watch<ExchangeData>().fail) {
+      return Container(
+        margin: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            getDropDown(),
+            const SizedBox(
+                height: 15),
+            getErrorScreen(),
+          ],
+        ),
+      );
+    }
+    return Container(
+        margin: const EdgeInsets.all(10),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              getDropDown(),
+              const SizedBox(
+                height: 15,
+              ),
+              if (!context.watch<ExchangeData>().internet) getWarning(),
+              getTotal(context),
+              if (context.watch<ExchangeData>().currencies.isNotEmpty) getBarGraph(),
+              if (context.watch<ExchangeData>().currencies.isNotEmpty) getPieGraph()
+            ],
+          ),
+        ));
+  }
+
   Widget getBarGraph() {
     return Container(
       margin: const EdgeInsets.fromLTRB(0, 10, 0, 40),
@@ -212,44 +251,14 @@ class _ExchangePage extends State<ExchangePage> {
         SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 300,
-            child: BarGraphWidget(currency: currencies, amount: values))
+            child: BarGraphWidget(currency: context.watch<ExchangeData>().currencies, amount: context.watch<ExchangeData>().values))
       ]),
     );
   }
 
   Widget getPieGraph() {
-    return PieChartWidget(currency: currencies, amount: values, convertedCurrency: currencyToTransfer,);
-  }
-
-  Widget getBody() {
-    if (fail) {
-      return Container(
-        margin: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            getDropDown(),
-            const SizedBox(height: 15),
-            getErrorScreen(),
-          ],
-        ),
-      );
-    }
-
-    return Container(
-        margin: const EdgeInsets.all(10),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              getDropDown(),
-              const SizedBox(
-                height: 15,
-              ),
-              if (noInternet) getWarning(),
-              getTotal(),
-              if (currencies.isNotEmpty) getBarGraph(),
-              if (currencies.isNotEmpty) getPieGraph()
-            ],
-          ),
-        ));
+    return PieChartWidget(currency: context.watch<ExchangeData>().currencies,
+      amount: context.watch<ExchangeData>().values,
+      convertedCurrency: context.watch<ExchangeData>().target,);
   }
 }

@@ -4,6 +4,7 @@ import '../../utils/constants.dart';
 import '../widgets/Header.dart';
 import '../widgets/bar_graph/bar_graph.dart';
 import '../widgets/pie_chart/pie_chart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ExchangePage extends StatefulWidget {
   const ExchangePage({super.key});
@@ -24,6 +25,43 @@ class _ExchangePage extends State<ExchangePage> {
   // values for graphs
   List<double> values = [];
   List<String> currencies = [];
+
+
+  late SharedPreferences _prefs;
+  Future<void> _startPreferences() async{
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+
+  updateCurrencies() async{
+    await _startPreferences();
+    late List<String> cur = [];
+    late List<double> am = [];
+
+    for (String currency in codeToName.keys){
+      final amount = _prefs.getDouble(currency);
+      if(amount != null && amount > 0){
+        cur.add(currency);
+        am.add(amount);
+      }
+    }
+    setState(() {
+      currencies = cur;
+      values = am;
+     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    updateCurrencies();
+  }
+
+  @override
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+  }
+
 
   double total = 0;
   String currencyToTransfer = "EUR";

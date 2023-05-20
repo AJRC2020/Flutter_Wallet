@@ -29,6 +29,8 @@ class ExchangeData extends ChangeNotifier {
   double getConversion() {
     double res = 0.0;
 
+    log(rates.toString());
+
     for (String key in wallet.keys.toList()) {
       res += wallet[key]! / rates[key]!;
     }
@@ -106,6 +108,7 @@ class ExchangeData extends ChangeNotifier {
         _fail = true;
       }
       else {
+        _fail = false;
         rates = check;
       }
     }
@@ -115,6 +118,7 @@ class ExchangeData extends ChangeNotifier {
 
   Future<void> updateConnectivity() async {
     var result = await (Connectivity().checkConnectivity());
+    log(result.toString());
     if (result == ConnectivityResult.none) {
       _internet = false;
     }
@@ -162,7 +166,7 @@ Future<Map<String, dynamic>> getRatesData(String base, List<String> symbols) asy
     symbolsString = "$symbolsString,$symbol";
   }
   symbolsString = symbolsString.substring(1);
-  String apikey = "lDRqpAZlcKarKpsq7O9yAsF7L9lLhI0Y";
+  String apikey = "MewoN23jPEBV08GCnzsmB3eYmnakPR8F";
   try {
     final response = await http.get(
       Uri.parse("https://api.apilayer.com/fixer/latest?symbols=$symbolsString&base=$base&apikey=$apikey")

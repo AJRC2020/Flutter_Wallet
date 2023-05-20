@@ -77,6 +77,13 @@ class ExchangeData extends ChangeNotifier {
     notifyListeners();
   }
 
+  void updateWalletRemove(String key) async{
+    wallet.remove(key);
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.remove(key);
+    notifyListeners();
+  }
+
   Future<void> getWallet() async{
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     for (String currency in codeToName.keys){

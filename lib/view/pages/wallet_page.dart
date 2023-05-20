@@ -5,7 +5,6 @@ import 'package:assignment2/view/widgets/wallet_card.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../widgets/header.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class WalletPage extends StatefulWidget {
   const WalletPage({super.key});
@@ -15,39 +14,6 @@ class WalletPage extends StatefulWidget {
 }
 
 class _WalletPage extends State<WalletPage> {
-  List<String> currencies = [];
-  List<double> amounts = [];
-
-  late SharedPreferences _prefs;
-  Future<void> _startPreferences() async{
-    _prefs = await SharedPreferences.getInstance();
-  }
-
-
-  updateCurrencies() async{
-    await _startPreferences();
-    late List<String> cur = [];
-    late List<double> am = [];
-
-    for (String currency in codeToName.keys){
-      final amount = _prefs.getDouble(currency);
-      if(amount != null && amount > 0){
-        cur.add(currency);
-        am.add(amount);
-      }
-    }
-    setState(() {
-      currencies = cur;
-      amounts = am;
-     });
-  }
-
-  @override
-  void initState() {
-    //super.initState();
-    //updateCurrencies();
-  }
-
 
 
   @override
@@ -106,7 +72,7 @@ class _WalletPage extends State<WalletPage> {
         onPressed: () => {
           showDialog(
               context: context,
-              builder: (BuildContext context)  => AddPopUp(context, updateCurrencies),
+              builder: (BuildContext context)  => AddPopUp(context, setState),
               )
         },
         child: Container(
@@ -147,7 +113,7 @@ class _WalletPage extends State<WalletPage> {
         return WalletCard(
           currency: context.watch<ExchangeData>().currencies[index],
           value: context.watch<ExchangeData>().amounts[index],
-          setState: (() => {}),
+          setState: setState, context: context,
         );
       },
     );

@@ -1,25 +1,17 @@
 import 'package:assignment2/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+
+import '../../controller/exchange_provider.dart';
 
 class WalletCard extends StatelessWidget {
   final String currency;
   final double value;
-  late SharedPreferences _prefs;
   final Function setState;
+  final BuildContext context;
 
-  WalletCard({super.key, required this.currency, required this.value, required this.setState}){
-    _startPreferences();
-  }
-
-  Future<void> _startPreferences() async{
-    _prefs = await SharedPreferences.getInstance();
-  }
-
-  remove(String key) async{
-    _prefs.remove(key);
-  }
+  const WalletCard({super.key, required this.currency, required this.value, required this.setState, required this.context});
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +43,7 @@ class WalletCard extends StatelessWidget {
             children: [Text(currency,
                 style:
                     const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              IconButton(onPressed: ()=>{ remove(currency), setState()}, icon: const Icon(Icons.close, color: ColorPallet.darkPink,))])
+              IconButton(onPressed: ()=>{ context.read<ExchangeData>().updateWalletRemove(currency), setState(()=>{})}, icon: const Icon(Icons.close, color: ColorPallet.darkPink,))])
           ],
         ),
       ),

@@ -34,9 +34,11 @@ class WalletCard extends StatelessWidget {
               "${format.simpleCurrencySymbol(currency)} ${value.toString()}",
               style: const TextStyle(fontSize: 20),
             ),
-            Text(currency,
+            Row(
+            children: [Text(currency,
                 style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              IconButton(onPressed: ()=>{}, icon: const Icon(Icons.close, color: ColorPallet.darkPink,))])
           ],
         ),
       ),

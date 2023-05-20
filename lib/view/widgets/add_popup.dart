@@ -1,10 +1,15 @@
+import 'dart:ffi';
+
 import 'package:assignment2/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AddPopUp extends AlertDialog {
-  AddPopUp(this.context, this.setState, {super.key});
+  AddPopUp(this.context, this.setState, {super.key}) {
+    _startPreferences();
+  }
 
   final BuildContext context;
 
@@ -13,6 +18,16 @@ class AddPopUp extends AlertDialog {
   late String currencyToTransfer = "EUR";
   late double amount = 0;
   final _formKey = GlobalKey<FormState>();
+
+  late SharedPreferences _prefs;
+  Future<void> _startPreferences() async{
+    _prefs = await SharedPreferences.getInstance();
+  }
+
+  addAmount(String key, double amount) async{
+    final currentAmount = _prefs.getDouble(key) ?? 0;
+    await _prefs.setDouble(key, currentAmount + amount);
+  }
 
 
   @override
@@ -46,7 +61,7 @@ class AddPopUp extends AlertDialog {
                   if (_formKey.currentState!.validate())
                     {
                       _formKey.currentState?.save(),
-                      // TODO: save these values
+                      addAmount(currencyToTransfer,amount),
                       setState(()=>{}),
                       Navigator.of(context).pop()
                     }

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -20,7 +22,7 @@ class _ExchangePage extends State<ExchangePage> {
 
   // warns that the used rates are old
   bool noInternet = false;
-
+  List<Color> colors = [];
   // warns that there was no internet and no old conversion rates
   bool fail = false;
 
@@ -59,7 +61,13 @@ class _ExchangePage extends State<ExchangePage> {
     updateCurrencies();
     context.read<ExchangeData>().updateConnectivity();
     context.read<ExchangeData>().getRates();
+
+    context.read<ExchangeData>().currencies.forEach((_) {
+      colors.add(
+          Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0));
+    });
   }
+
 
   @override
   void setState(VoidCallback fn) {
@@ -262,6 +270,9 @@ class _ExchangePage extends State<ExchangePage> {
         ),
       );
     }
+
+
+
     return Container(
         margin: const EdgeInsets.all(10),
         child: SingleChildScrollView(
@@ -297,7 +308,7 @@ class _ExchangePage extends State<ExchangePage> {
         SizedBox(
             width: MediaQuery.of(context).size.width,
             height: 300,
-            child: BarGraphWidget(currency: context.watch<ExchangeData>().currencies, amount: context.watch<ExchangeData>().values))
+            child: BarGraphWidget(currency: context.watch<ExchangeData>().currencies, amount: context.watch<ExchangeData>().values, color: colors,))
       ]),
     );
   }
@@ -305,6 +316,6 @@ class _ExchangePage extends State<ExchangePage> {
   Widget getPieGraph() {
     return PieChartWidget(currency: context.watch<ExchangeData>().currencies,
       amount: context.watch<ExchangeData>().values,
-      convertedCurrency: context.watch<ExchangeData>().target,);
+      convertedCurrency: context.watch<ExchangeData>().target, colors: colors,);
   }
 }

@@ -41,7 +41,6 @@ dependencies:
   http:
   flutter_spinkit:
   connectivity_plus:
-  shared_preferences:
   fl_chart: ^0.62.0
   shared_preferences: ^2.1.1
 

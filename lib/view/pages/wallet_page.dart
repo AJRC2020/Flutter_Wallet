@@ -46,10 +46,7 @@ class _WalletPage extends State<WalletPage> {
     updateCurrencies();
   }
 
-  @override
-  void setState(VoidCallback fn) {
-    super.setState(fn);
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +104,7 @@ class _WalletPage extends State<WalletPage> {
         onPressed: () => {
           showDialog(
               context: context,
-              builder: (BuildContext context)  => AddPopUp(context, setState),
+              builder: (BuildContext context)  => AddPopUp(context, updateCurrencies),
               )
         },
         child: Container(
@@ -131,7 +128,7 @@ class _WalletPage extends State<WalletPage> {
   }
 
   Widget getListView(){
-    updateCurrencies();
+
     if (currencies.isEmpty) {
       return const Text(
         "Your wallet is empty.",
@@ -148,6 +145,7 @@ class _WalletPage extends State<WalletPage> {
         return WalletCard(
           currency: currencies[index],
           value: amounts[index],
+          setState: updateCurrencies,
         );
       },
     );

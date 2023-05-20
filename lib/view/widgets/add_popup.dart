@@ -62,7 +62,7 @@ class AddPopUp extends AlertDialog {
                     {
                       _formKey.currentState?.save(),
                       addAmount(currencyToTransfer,amount),
-                      setState(()=>{}),
+                      setState(),
                       Navigator.of(context).pop()
                     }
                 },

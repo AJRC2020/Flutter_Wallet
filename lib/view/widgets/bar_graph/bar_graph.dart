@@ -9,12 +9,13 @@ import 'bar_data.dart';
 class BarGraphWidget extends StatelessWidget {
   final List<String> currency;
   final List<double> amount;
+  final List<Color> color;
 
-  const BarGraphWidget({super.key, required this.currency, required this.amount});
+  const BarGraphWidget({super.key, required this.currency, required this.amount, required this.color});
 
   @override
   Widget build(BuildContext context) {
-    BarData data = BarData(currency, amount);
+    BarData data = BarData(currency, amount,color);
 
     data.initializeBarData();
 
@@ -51,7 +52,7 @@ class BarGraphWidget extends StatelessWidget {
                     toY: e.y,
                     width: 40,
                     borderRadius: BorderRadius.circular(4),
-                    color: ColorPallet.lightPink,
+                    color: e.color,
                     
                   )
                 ],

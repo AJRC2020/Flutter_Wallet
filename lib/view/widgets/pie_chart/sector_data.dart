@@ -7,14 +7,15 @@ class SectorData{
 
   final List<String> currency;
   final List<double> amount;
+  final List<Color> colors;
 
   List<Sector> sectorData = [];
 
-  SectorData(this.currency, this.amount);
+  SectorData(this.currency, this.amount, this.colors);
 
   void initializeSectorData() {
     for (var i = 0; i <amount.length; i++) {
-      sectorData.add(Sector(currency[i], amount[i], Color((Random().nextDouble() * 0xFFFFFF).toInt()).withOpacity(1.0)));
+      sectorData.add(Sector(currency[i], amount[i], colors[i]));
     }
   }
 }

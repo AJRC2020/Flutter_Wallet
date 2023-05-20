@@ -8,14 +8,15 @@ import 'package:intl/intl.dart';
 class PieChartWidget extends StatelessWidget {
   final List<String> currency;
   final List<double> amount;
+  final List<Color> colors;
   final String convertedCurrency;
 
-  const PieChartWidget({Key? key, required this.currency, required this.amount, required this.convertedCurrency})
+  const PieChartWidget({Key? key, required this.currency, required this.amount, required this.convertedCurrency, required this.colors})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    var data = SectorData(currency, amount);
+    var data = SectorData(currency, amount,colors);
     data.initializeSectorData();
 
     return Column(

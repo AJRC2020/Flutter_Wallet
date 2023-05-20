@@ -1,9 +1,9 @@
-import 'dart:ffi';
-
+import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:assignment2/utils/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AddPopUp extends AlertDialog {
@@ -61,7 +61,7 @@ class AddPopUp extends AlertDialog {
                   if (_formKey.currentState!.validate())
                     {
                       _formKey.currentState?.save(),
-                      addAmount(currencyToTransfer,amount),
+                      context.read<ExchangeData>().updateWallet(currencyToTransfer, amount),
                       setState(()=>{}),
                       Navigator.of(context).pop()
                     }

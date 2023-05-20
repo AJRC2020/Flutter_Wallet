@@ -1,7 +1,9 @@
+import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:assignment2/utils/constants.dart';
 import 'package:assignment2/view/widgets/add_popup.dart';
 import 'package:assignment2/view/widgets/wallet_card.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/header.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -132,7 +134,7 @@ class _WalletPage extends State<WalletPage> {
 
   Widget getListView(){
     updateCurrencies();
-    if (currencies.isEmpty) {
+    if (context.watch<ExchangeData>().currencies.isEmpty) {
       return const Text(
         "Your wallet is empty.",
         style: TextStyle(color: ColorPallet.darkPink, fontSize: 50),
@@ -143,11 +145,11 @@ class _WalletPage extends State<WalletPage> {
     return ListView.builder(
       scrollDirection: Axis.vertical,
       shrinkWrap: true,
-      itemCount: currencies.length,
+      itemCount: context.watch<ExchangeData>().currencies.length,
       itemBuilder: (BuildContext context, int index) {
         return WalletCard(
-          currency: currencies[index],
-          value: amounts[index],
+          currency: context.watch<ExchangeData>().currencies[index],
+          value: context.watch<ExchangeData>().amounts[index],
         );
       },
     );

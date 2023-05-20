@@ -1,3 +1,4 @@
+import 'package:assignment2/utils/constants.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:convert';
@@ -8,14 +9,14 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ExchangeData extends ChangeNotifier {
   bool loading = false;
   Map<String, dynamic> rates = {};
-  Map<String, double> wallet = {
-    "EUR": 23.4,
-    "JPY": 2100,
-    "USD": 35.9
-  };
+  Map<String, double> wallet = {};
   String targetCurrency = "EUR";
   bool _internet = true;
   bool _fail = false;
+
+  ExchangeData() {
+    getWallet();
+  }
 
   double get result => getConversion();
   String get target => targetCurrency;
@@ -23,6 +24,7 @@ class ExchangeData extends ChangeNotifier {
   bool get fail => _fail;
   List<String> get currencies => getCurrencies();
   List<double> get values => getValues();
+  List<double> get amounts => getAmounts();
 
   double getConversion() {
     double res = 0.0;
@@ -48,6 +50,16 @@ class ExchangeData extends ChangeNotifier {
     return values;
   }
 
+  List<double> getAmounts() {
+    List<double> amounts = [];
+
+    for (String key in wallet.keys.toList()) {
+      amounts.add(wallet[key]!);
+    }
+
+    return amounts;
+  }
+
   void updateTarget(String currency) async {
     targetCurrency = currency;
     await updateConnectivity();
@@ -55,9 +67,24 @@ class ExchangeData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateWallet(Map<String, double> wallet) {
-    this.wallet = wallet;
-    getRates();
+  void updateWallet(String key, double value) async{
+    double currentVal = wallet[key] ?? 0;
+    wallet[key] = currentVal + value;
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (wallet[key] != null) {
+      await prefs.setDouble(key, wallet[key]!);
+    }
+    notifyListeners();
+  }
+
+  Future<void> getWallet() async{
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    for (String currency in codeToName.keys){
+      final amount = prefs.getDouble(currency);
+      if(amount != null && amount > 0){
+        wallet[currency] = amount;
+      }
+    }
     notifyListeners();
   }
 

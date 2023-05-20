@@ -20,11 +20,23 @@ class BarGraphWidget extends StatelessWidget {
 
     return BarChart(BarChartData(
         minY: 0,
-        maxY: amount.reduce(max) + 1,
+        maxY: double.parse(amount.reduce(max).toStringAsFixed(0))+1,
         gridData: FlGridData(show: false),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
             show: true,
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                reservedSize: 40,
+                showTitles: true,
+                getTitlesWidget: (value, meta) {
+                  if (value == double.parse(amount.reduce(max).toStringAsFixed(0))+1 ){
+                    return SideTitleWidget(axisSide: meta.axisSide, child: const SizedBox.shrink());
+                  }
+                  return SideTitleWidget(axisSide: meta.axisSide, child: Text(value.toStringAsFixed(0).toString()));
+                },
+              ),
+            ),
             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(

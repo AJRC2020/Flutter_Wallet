@@ -122,7 +122,7 @@ class _ExchangePage extends State<ExchangePage> {
           width: 5,
         ),
         Text(
-          "${format.simpleCurrencySymbol(context.watch<ExchangeData>().target)} ${context.watch<ExchangeData>().result} (${context.watch<ExchangeData>().target})",
+          "${format.simpleCurrencySymbol(context.watch<ExchangeData>().target)} ${context.watch<ExchangeData>().result.toStringAsFixed(5)}.. (${context.watch<ExchangeData>().target})",
           style: const TextStyle(fontSize: 25),
         )
       ],

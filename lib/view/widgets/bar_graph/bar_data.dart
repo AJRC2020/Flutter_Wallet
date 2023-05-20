@@ -10,7 +10,7 @@ class BarData {
 
   void initializeBarData() {
     for (var i = 0; i <amount.length; i++) {
-      barData.add(IndividualBar(i, amount[i]));
+      barData.add(IndividualBar(i, double.parse(amount[i].toStringAsFixed(5))));
     }
   }
 }

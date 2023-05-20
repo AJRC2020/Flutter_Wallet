@@ -1,9 +1,18 @@
+import 'package:assignment2/controller/exchange_provider.dart';
 import 'package:assignment2/utils/theme.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'controller/router.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+      MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => ExchangeData())
+          ],
+        child: const MyApp(),
+      ),
+  );
 }
 
 class MyApp extends StatelessWidget {

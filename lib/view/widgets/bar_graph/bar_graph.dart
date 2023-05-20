@@ -33,7 +33,7 @@ class BarGraphWidget extends StatelessWidget {
                   if (value == double.parse(amount.reduce(max).toStringAsFixed(0))+1 ){
                     return SideTitleWidget(axisSide: meta.axisSide, child: const SizedBox.shrink());
                   }
-                  return SideTitleWidget(axisSide: meta.axisSide, child: Text(value.toStringAsFixed(0).toString()));
+                  return SideTitleWidget(axisSide: meta.axisSide, child: Text(meta.formattedValue));
                 },
               ),
             ),
